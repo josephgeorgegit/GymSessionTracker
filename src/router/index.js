@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import SelectExercise from '../views/SelectExercise.vue'
+import BuildWorkout from '../views/BuildWorkout.vue'
 
 Vue.use(VueRouter)
 
@@ -12,9 +12,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/selectexercise',
-    name: 'SelectExercise',
-    component: SelectExercise
+    path: '/buildworkout',
+    name: 'BuildWorkout',
+    component: BuildWorkout
   }
 ]
 

@@ -1,6 +1,6 @@
 <template>
   <div class="myexercise">
-      <p>{{name}}</p>
+      <h2>{{name}}</h2>
       <div v-for="set in sets" :key="set.id">
           <p>{{set.name}}: {{set.total}} sets of {{set.reps}} x {{set.weight}}kg 
               <v-btn icon @click="changeTotal(-1, set.name, set.reps, set.weight)">

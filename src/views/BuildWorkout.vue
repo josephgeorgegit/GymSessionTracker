@@ -2,9 +2,8 @@
   <div class="selectexercise">
       <div v-if="!review">
         <div v-if="!selectFinish">
-            <h2>Select Exercises to Track</h2>
-
-
+            <h2>Select exercises from this session</h2>
+            <p>{{feedback}}</p>
             <div style="max-width: 100vw" class="d-flex flex-wrap">
                 <h2>Chest</h2>
                 <Exercise 
@@ -12,6 +11,8 @@
                 :name="e.name"
                 :type="e.type"
                 :id="e.id"
+                :selected="e.selected"
+                :group="'chest'"
                 @add="add"
                 />
             </div>
@@ -23,6 +24,8 @@
                 :name="e.name"
                 :type="e.type"
                 :id="e.id"
+                :selected="e.selected"
+                :group="'back'"
                 @add="add"
                 />
             </div>
@@ -34,6 +37,8 @@
                 :name="e.name"
                 :type="e.type"
                 :id="e.id"
+                :selected="e.selected"
+                :group="'legs'"
                 @add="add"
                 />
             </div>
@@ -59,6 +64,7 @@
             <v-btn @click="nextExercise">Next</v-btn>
         </div>
       </div>
+
     <div v-if="review">
         <p v-for="r in reviewExercise" :key="r.id">{{r.name}}</p>
     </div>
@@ -77,33 +83,35 @@ export default {
     },
     data(){
         return{
+            feedback: null,
+            area: null,
             next: 0,
             review: false,
             selectFinish: false,
             exercises: [
                 {chest: [
-                    {name: "Bench Press", type: "weight", id: 0},
-                    {name: "Incline Bench Press", type: "weight", id: 1},
-                    {name: "Decline Bench Press", type: "weight", id: 2},
-                    {name: "Skull Crushers", type: "weight", id: 3},
-                    {name: "Close Grip Bench Press", type: "weight", id: 4},
-                    {name: "Push-ups", type: "bodyweight", id: 5},
+                    {name: "Bench Press", type: "weight", id: 0, selected: false},
+                    {name: "Incline Bench Press", type: "weight", id: 1, selected: false},
+                    {name: "Decline Bench Press", type: "weight", id: 2, selected: false},
+                    {name: "Skull Crushers", type: "weight", id: 3, selected: false},
+                    {name: "Close Grip Bench Press", type: "weight", id: 4, selected: false},
+                    {name: "Push-ups", type: "bodyweight", id: 5, selected: false},
                 ]},
                 {back: [
-                    {name: "Lat Pulldown", type: "weight", id: 0},
-                    {name: "Pull-ups", type: "bodyweight", id: 1},
-                    {name: "Chin-ups", type: "bodyweight", id: 2},
-                    {name: "Lat Pulldown", type: "weight", id: 3},
-                    {name: "Bent Over Row", type: "weight", id: 4},
-                    {name: "Back Extensions", type: "weight", id: 5},
+                    {name: "Lat Pulldown", type: "weight", id: 0, selected: false},
+                    {name: "Pull-ups", type: "bodyweight", id: 1, selected: false},
+                    {name: "Chin-ups", type: "bodyweight", id: 2, selected: false},
+                    {name: "Lat Pulldown", type: "weight", id: 3, selected: false},
+                    {name: "Bent Over Row", type: "weight", id: 4, selected: false},
+                    {name: "Back Extensions", type: "weight", id: 5, selected: false},
                 ]},
                 {legs: [
-                    {name: "Front Squats", type: "weight", id: 0},
-                    {name: "Back Squats", type: "weight", id: 1},
-                    {name: "Lunges", type: "weight", id: 2},
-                    {name: "Deadlifts", type: "weight", id: 3},
-                    {name: "Leg Extnesions", type: "weight", id: 4},
-                    {name: "Calf Raises", type: "weight", id: 5},
+                    {name: "Front Squats", type: "weight", id: 0, selected: false},
+                    {name: "Back Squats", type: "weight", id: 1, selected: false},
+                    {name: "Lunges", type: "weight", id: 2, selected: false},
+                    {name: "Deadlifts", type: "weight", id: 3, selected: false},
+                    {name: "Leg Extnesions", type: "weight", id: 4, selected: false},
+                    {name: "Calf Raises", type: "weight", id: 5, selected: false},
                 ]},
             ],
             myExercises: [],
@@ -115,7 +123,34 @@ export default {
     },
     methods: {
         add(e){
-            this.myExercises.push(e)
+            this.feedback = null
+            console.log(this.exercises[0])
+            // console.log(this.exercises[this.index].chest[e.id].selected)
+
+            if(e.group == 'chest'){
+                if(this.exercises[0].chest[e.id].selected  == false){
+                    this.exercises[0].chest[e.id].selected = true
+                    this.myExercises.push(e)
+                }else{
+                this.feedback = "Already Selected!"
+                }
+            }
+            if(e.group == 'back'){
+                if(this.exercises[1].back[e.id].selected  == false){
+                    this.exercises[1].back[e.id].selected = true
+                    this.myExercises.push(e)
+                }else{
+                this.feedback = "Already Selected!"
+                }
+            }
+            if(e.group == 'legs'){
+                if(this.exercises[2].legs[e.id].selected  == false){
+                    this.exercises[2].legs[e.id].selected = true
+                    this.myExercises.push(e)
+                }else{
+                this.feedback = "Already Selected!"
+                }
+            }
         },
         update(e){
             console.log("update function in select", e)
@@ -132,6 +167,7 @@ export default {
             console.log(this.reviewExercise)
         },
         nextExercise(){
+            console.log(this.reviewExercise)
             if(this.next <= this.myExercises.length){
                 this.next++
             }else{
