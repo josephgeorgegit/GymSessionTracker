@@ -1,5 +1,6 @@
 <template>
   <div class="selectexercise">
+      <v-btn @click=fuckedup>fuck</v-btn>
       <div v-if="!review">
         <div v-if="!selectFinish">
             <h2>Select exercises from this session</h2>
@@ -54,24 +55,29 @@
 
         <div v-if="selectFinish">
             <MyExercise 
-                :name="myExercises[next].name"
-                :type="myExercises[next].type"
-                :id="myExercises[next].id"
+                :name="myExercises[myIndex].name"
+                :type="myExercises[myIndex].type"
+                :id="myExercises[myIndex].id"
+                :myIndex="myIndex"
                 :allExercises="myExercises.length"
-                :next="next"
                 @update="update"
                 />
-            <v-btn @click="nextExercise">Next</v-btn>
         </div>
       </div>
 
     <div v-if="review">
-        <p v-for="r in reviewExercise" :key="r.id">{{r.name}}</p>
+        <v-card v-for="r in reviewExercise" :key="r.id">
+            <p>{{r.name}}</p>
+            <p v-for="(s, index) in r.sets" :key="index">{{s.reps}}x{{s.weight}} {{s.total}} total sets</p>
+            <!-- <p v-for="(s,index) in r.sets" :key="index">{{s}}</p> -->
+        </v-card>
     </div>
   </div>
 </template>
 
 <script>
+import db from "@/firebase/init"
+
 import Exercise from '../components/Exercise.vue'
 import MyExercise from '../components/MyExercise.vue'
 
@@ -83,9 +89,9 @@ export default {
     },
     data(){
         return{
+            myIndex: 0,
             feedback: null,
             area: null,
-            next: 0,
             review: false,
             selectFinish: false,
             exercises: [
@@ -117,9 +123,6 @@ export default {
             myExercises: [],
             reviewExercise: []
         }
-    },
-    computed: {
-
     },
     methods: {
         add(e){
@@ -153,30 +156,25 @@ export default {
             }
         },
         update(e){
+            console.log("myIndex Value: ", this.myIndex)
             console.log("update function in select", e)
             let data = {name: e.name, id: e.id, sets: e.sets, type: e.type}
             this.reviewExercise.push(data)
-            // for(let i=0; i<this.reviewExercise.length; i++){
-            //     if(e.name == this.reviewExercise[i].name){
-            //         this.reviewExercise.splice(i, 1)
-            //         this.reviewExercise.push(e)
-            //     }else{
-            //         this.reviewExercise.push(e)
-            //     }
-            // }
             console.log(this.reviewExercise)
-        },
-        nextExercise(){
-            console.log(this.reviewExercise)
-            if(this.next <= this.myExercises.length){
-                this.next++
-            }else{
+            this.myIndex++
+            if(this.myIndex >  this.myExercises.length-1){
                 this.review = true
             }
         },
         toSets(){
             this.selectFinish = true
+        },
+        fuckedup(){
+        for(let i=0;i<this.exercises.length; i++){
+            let name = Object.keys(this.exercises[i])
+            db.collection("Exercises").doc(`${name}`).set(this.exercises[i])
         }
+    },
     }
 
 }
