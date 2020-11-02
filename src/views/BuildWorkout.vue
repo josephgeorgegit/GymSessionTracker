@@ -5,6 +5,16 @@
         <div v-if="!selectFinish">
             <h2>Title This Workout</h2>
             <v-text-field v-model="workoutName"></v-text-field>
+            
+            <div v-if="templates">
+                <h3>Use a Template</h3>
+                <v-btn 
+                v-for="(t, index) in templates" 
+                :key='index'
+                @click=toSets(t.data.template)>
+                {{t.name}}
+                </v-btn>
+            </div>
             <h2>Select exercises from this session</h2>
             <p>{{feedback}}</p>
             <v-btn v-for="(b, index) in Object.keys(exercises)" :key="index" @click="group = b">{{b}}</v-btn>
@@ -72,6 +82,7 @@ export default {
     },
     data(){
         return{
+            templates: null,
             group: "chest",
             saveTemplate: false,
             workoutName: "My Workout",
@@ -110,6 +121,17 @@ export default {
             reviewExercise: []
         }
     },
+    created(){
+        let allData = []
+        db.collection("TemplateWorkout").get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+            console.log(doc.id, " => ", doc.data());
+            allData.push({name: doc.id, data: doc.data()})
+            })
+        })
+        this.templates = allData
+        console.log(this.templates)
+    },
     methods: {
         save(){
             let date = moment(Date.now()).format('ll')
@@ -140,9 +162,13 @@ export default {
                 this.review = true
             }
         },
-        toSets(){
+        toSets(e){
+            console.log(e)
             if(this.saveTemplate == true){
                 db.collection("TemplateWorkout").doc(`${this.workoutName} Template`).set({template: this.myExercises})
+            }
+            if(e){
+                this.myExercises = e
             }
             this.selectFinish = true
         },
